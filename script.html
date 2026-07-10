@@ -1,0 +1,225 @@
+<!-- Script pour les interactions côté navigateur -->
+
+<script>
+  // ── Cache local et état global de l'application ──
+  let CACHE_STOCK = { produits: [], lots: [] };
+
+  /**
+   * Gestion de la navigation entre l'accueil et les formulaires
+   */
+  function naviguerVers(idPage) {
+    // Masquer toutes les sections
+    document.querySelectorAll('.page-section').forEach(section => {
+      section.classList.remove('active');
+    });
+
+    // Afficher la section demandée
+    const pageCible = document.getElementById(idPage);
+    if (pageCible) {
+      pageCible.classList.add('active');
+    }
+
+    // Traitements spécifiques lors de l'accès aux formulaires
+    if (idPage === 'page-sortie') {
+      rafraichirMoteurSortie();
+    } else if (idPage === 'page-reception') {
+      DOM.form_reception.reset();
+      basculerNouveauProduit('existant');
+      // Fixer la date de réception par défaut à la date du jour (YYYY-MM-DD)
+      DOM.rec_date_rec.value = new Date().toISOString().substring(0, 10);
+    }
+
+    // Rafraîchir les propositions d'opérateurs à chaque ouverture de page
+    chargerOperateurs();
+  }
+
+  /**
+   * Permute dynamiquement l'affichage des champs selon le type de produit (Existant / Nouveau)
+   */
+  function basculerNouveauProduit(type) {
+    const isNouveau = (type === 'nouveau');
+    DOM.bloc_produit_existant.style.display = isNouveau ? 'none' : 'block';
+    DOM.bloc_nouveau_produit.style.display = isNouveau ? 'block' : 'none';
+
+    // Ajustement dynamique des attributs requis pour la validation HTML5
+    DOM.rec_id_produit.required = !isNouveau;
+    DOM.rec_nom_prd.required = isNouveau;
+  }
+
+  // ── Moteur de chargement du tableau de bord ──
+  function chargerDashboard() {
+    google.script.run
+      .withSuccessHandler(afficherDashboard)
+      .withFailureHandler(err => {
+        afficherToast('Erreur de chargement : ' + err.message, true);
+        DOM.liste_stock.innerHTML = '<div class="etat-vide">Impossible de charger les données.</div>';
+        DOM.liste_perem.innerHTML = '<div class="etat-vide">Impossible de charger les données.</div>';
+      })
+      .Init_getDashboardData();
+  }
+
+  function afficherDashboard(data) {
+    if (!data.ok) {
+      afficherToast('Erreur : ' + data.erreur, true);
+      return;
+    }
+
+    // Stats rapides
+    if (DOM.stat_produits) DOM.stat_produits.textContent = data.totalProduits || 0;
+    if (DOM.stat_lots) DOM.stat_lots.textContent = data.totalLots || 0;
+
+    // Timestamp footer
+    if (data.timestamp && DOM.footer_timestamp) {
+      const d = new Date(data.timestamp);
+      DOM.footer_timestamp.textContent =
+        'Mis à jour à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ── Alertes stock ──
+    const listestock = DOM.liste_stock;
+    const badgestock = DOM.badge_stock;
+    const prods = data.produitsEnAlerte || [];
+
+    if (listestock && badgestock) {
+      if (prods.length === 0) {
+        badgestock.textContent = '✓ OK';
+        badgestock.className = 'badge badge--ok';
+        listestock.innerHTML = '<div class="etat-ok">🟢 Tous les stocks sont suffisants</div>';
+      } else {
+        badgestock.textContent = prods.length;
+        badgestock.className = 'badge';
+        listestock.innerHTML = prods.map(p => {
+          const rupture = String(p['Alerte stock'] || '').includes('🔴');
+          return `
+            <div class="alerte-card">
+              <div class="alerte-pastille ${rupture ? 'pastille-rouge' : 'pastille-orange'}"></div>
+              <div class="alerte-info">
+                <div class="alerte-nom">${escHtml(p['Nom du produit'] || '—')}</div>
+                <div class="alerte-detail">
+                  Stock : <strong>${p['Stock total'] || 0}</strong> · Seuil : ${p['Seuil alerte (stock bas)'] || '—'}
+                  ${p['Emplacement'] ? ' · ' + escHtml(p['Emplacement']) : ''}
+                </div>
+              </div>
+              <span class="alerte-tag ${rupture ? 'tag-rouge' : 'tag-orange'}">
+                ${rupture ? 'RUPTURE' : 'STOCK BAS'}
+              </span>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    // ── Alertes péremption ──
+    const listePerem = DOM.liste_perem;
+    const badgePerem = DOM.badge_perem;
+    const lots = data.lotsEnAlerte || [];
+
+    if (listePerem && badgePerem) {
+      if (lots.length === 0) {
+        badgePerem.textContent = '✓ OK';
+        badgePerem.className = 'badge badge--ok';
+        listePerem.innerHTML = '<div class="etat-ok">🟢 Aucune péremption dans les 60 jours</div>';
+      } else {
+        badgePerem.textContent = lots.length;
+        badgePerem.className = 'badge';
+        listePerem.innerHTML = lots.map(lot => {
+          const jours = Number(lot['Jours avant péremption']);
+          const perime = jours < 0;
+          const urgent = jours <= 30;
+          const cls = perime ? 'rouge' : urgent ? 'orange' : 'jaune';
+          const tag = perime ? 'PÉRIMÉ' : (jours + ' j');
+          const datePer = _formatDateAffichage(lot['Date de péremption']);
+
+          return `
+            <div class="alerte-card">
+              <div class="alerte-pastille pastille-${cls}"></div>
+              <div class="alerte-info">
+                <div class="alerte-nom">${escHtml(lot['Nom produit'] || lot['Référence lot'] || '—')}</div>
+                <div class="alerte-detail">
+                  Lot : ${escHtml(lot['Référence lot'] || '—')} · Expire le ${datePer}
+                  · Restant : <strong>${lot['Quantité restante'] || 0}</strong>
+                </div>
+              </div>
+              <span class="alerte-tag tag-${cls}">${tag}</span>
+            </div>`;
+        }).join('');
+      }
+    }
+
+    // ── Barre de statut header ──
+    const totalAlertes = prods.length + lots.length;
+    const statusBar = DOM.status_bar;
+    if (statusBar) {
+      if (totalAlertes > 0) {
+        statusBar.classList.add('actif');
+        DOM.status_bar_texte.textContent =
+          totalAlertes + ' alerte' + (totalAlertes > 1 ? 's' : '') + ' à traiter';
+      } else {
+        statusBar.classList.remove('actif');
+      }
+    }
+
+    // Sous-titre header avec date
+    if (DOM.header_sub) {
+      DOM.header_sub.textContent =
+        new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    // Charger également les opérateurs au démarrage
+    chargerOperateurs();
+  }
+
+  /**
+   * Récupère et injecte les noms d'opérateurs existants pour l'auto-complétion
+   */
+  function chargerOperateurs() {
+    google.script.run
+      .withSuccessHandler(function(response) {
+        if (response.ok) {
+          let datalist = DOM.liste_operateurs;
+          if (!datalist) {
+            datalist = DOM.datalist;
+            datalist.id = 'liste-operateurs';
+            document.body.appendChild(datalist);
+          }
+          datalist.innerHTML = response.operateurs.map(op => `<option value="${escHtml(op)}">`).join('');
+        }
+      })
+      .Utils_getOperateurs();
+  }
+
+  // ── Toast ──
+  let toastTimer = null;
+  function afficherToast(msg, erreur) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast' + (erreur ? ' erreur' : '');
+    void el.offsetWidth;
+    el.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('visible'), 3200);
+  }
+
+  // ── Utilitaires ──
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function _formatDateAffichage(val) {
+    if (!val) return '—';
+    try {
+      const d = new Date(val);
+      if (isNaN(d)) return String(val);
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (e) { return String(val); }
+  }
+
+  // ── Lancement initial ──
+  document.addEventListener('DOMContentLoaded', () => {
+    chargerDashboard();
+  });
+</script>

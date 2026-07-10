@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Stock Cabinet Dentaire</title>
+
+    <!-- Injection de la feuille de style -->
+    <?!= Utils_include('style'); ?>
+</head>
+
+<body>
+
+    <!-- ── EN-TÊTE ── -->
+    <header class="header">
+        <div class="header-inner">
+            <span class="header-logo">🦷</span>
+            <div>
+                <div class="header-title">Stock Médicaments</div>
+                <div class="header-sub" id="header-sub">Cabinet dentaire</div>
+            </div>
+        </div>
+        <div class="status-bar" id="status-bar">
+            ⚠️ <span id="status-bar-texte">Alertes actives</span>
+            <span id="status-bar-texte">Initialisation de l'état des stocks...</span>
+        </div>
+    </header>
+
+    <!-- ── CONTENU ── -->
+    <main class="conteneur">
+
+        <section id="page-accueil" class="page-section active">
+            <div class="tuiles">
+                <button class="tuile tuile--bleu" onclick="naviguerVers('page-reception')">
+                    <span class="tuile__icone">📥</span>
+                    <span class="tuile__titre">Réception</span>
+                    <span class="tuile__desc">Entrée de marchandise</span>
+                </button>
+                <button class="tuile tuile--orange" onclick="naviguerVers('page-sortie')">
+                    <span class="tuile__icone">📤</span>
+                    <span class="tuile__titre">Sortie</span>
+                    <span class="tuile__desc">Prélèvement produit</span>
+                </button>
+                <button class="tuile tuile--large" onclick="afficherToast('Ouverture du catalogue (Bientôt)')">
+                    <span class="tuile__icone">👁</span>
+                    <span class="tuile__titre">Consulter le stock</span>
+                </button>
+            </div>
+
+            <div class="alertes-bloc">
+                <h2 class="section-titre">⚠️ Alertes du jour</h2>
+                <div id="zone-alertes">
+                    <p style="color: var(--gris-text); font-style: italic;">Aucune alerte critique détectée.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-reception" class="page-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <button class="btn-retour" onclick="naviguerVers('page-accueil')">← Retour</button>
+                    <h2>Enregistrer une réception (Entrée)</h2>
+                </div>
+
+                <form id="form-reception" onsubmit="soumettreReception(event)">
+                    <div class="form-group">
+                        <label>Type de produit *</label>
+                        <select id="rec-type-produit" onchange="basculerNouveauProduit(this.value)">
+                            <option value="existant">Produit déjà référencé</option>
+                            <option value="nouveau">+ Créer une nouvelle fiche produit</option>
+                        </select>
+                    </div>
+
+                    <div id="bloc-produit-existant" class="form-group">
+                        <label for="rec-id-produit">Sélectionner le produit *</label>
+                        <select id="rec-id-produit" required></select>
+                    </div>
+
+                    <div id="bloc-nouveau-produit"
+                        style="display:none; border-left: 3px solid var(--bleu); padding-left: 10px; margin-bottom:15px;">
+                        <div class="form-group">
+                            <label for="rec-nom-prod">Nom du produit *</label>
+                            <input type="text" id="rec-nom-prod" placeholder="Nom commercial / Dosages">
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-cat-reg">Catégorie Réglementaire *</label>
+                            <select id="rec-cat-reg">
+                                <option value="Consommable">Consommable</option>
+                                <option value="Dispositif médical">Dispositif médical</option>
+                                <option value="Médicament classique">Médicament classique</option>
+                                <option value="Stupéfiant / Liste I-II">Stupéfiant / Liste I-II</option>
+                                <option value="Anesthésique">Anesthésique</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-cat-usage">Catégorie d'usage *</label>
+                            <select id="rec-cat-usage">
+                                <option value="Matériel à usage unique">Matériel à usage unique</option>
+                                <option value="Anesthésie">Anesthésie</option>
+                                <option value="Antibiotique">Antibiotique</option>
+                                <option value="Antalgique">Antalgique</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-unite">Unité de conditionnement *</label>
+                            <select id="rec-unite">
+                                <option value="Boîte">Boîte</option>
+                                <option value="Flacon">Flacon</option>
+                                <option value="Carpule">Carpule</option>
+                                <option value="Tube">Tube</option>
+                                <option value="Unité">Unité</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-seuil">Seuil d'alerte (Stock bas) *</label>
+                            <input type="number" id="rec-seuil" value="5" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rec-lot-fourn">N° lot fournisseur *</label>
+                            <input type="text" id="rec-lot-fourn" required placeholder="Ex: B24-110">
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-qte">Quantité reçue *</label>
+                            <input type="number" id="rec-qte" required min="1" placeholder="Nombre d'unités">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rec-date-rec">Date réception *</label>
+                            <input type="date" id="rec-date-rec" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rec-date-pem">Date de péremption</label>
+                            <input type="date" id="rec-date-pem">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rec-fournisseur">Fournisseur *</label>
+                        <input type="text" id="rec-fournisseur" required placeholder="Nom du laboratoire/distributeur">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rec-emplacement">Emplacement de stockage *</label>
+                        <input type="text" id="rec-emplacement" required placeholder="Ex: Tiroir A / Armoire stérile">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rec-operateur">Effectué par *</label>
+                        <input type="text" id="rec-operateur" list="liste-operateurs" required
+                            placeholder="Votre nom/prénom">
+                    </div>
+
+                    <button type="submit" class="btn-soumettre btn-soumettre--bleu" id="btn-submit-rec">Enregistrer la
+                        Réception</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="page-sortie" class="page-section">
+            <div class="form-card">
+                <div class="form-header">
+                    <button class="btn-retour" onclick="naviguerVers('page-accueil')">← Retour</button>
+                    <h2>Enregistrer une sortie (Prélèvement)</h2>
+                </div>
+
+                <form id="form-sortie" onsubmit="soumettreSortie(event)">
+                    <div class="form-group">
+                        <label for="sor-ref-lot">Sélectionner ou scanner le lot disponible *</label>
+                        <select id="sor-ref-lot" required onchange="mettreAJourApercuLot(this.value)">
+                            <option value="">-- Choisir un lot en stock --</option>
+                        </select>
+                        <div id="apercu-stock-lot" class="info-stock-restant"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sor-qte">Quantité prélevée *</label>
+                        <input type="number" id="sor-qte" required min="1" placeholder="Quantité à sortir">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sor-operateur">Effectué par *</label>
+                        <input type="text" id="sor-operateur" list="liste-operateurs" required
+                            placeholder="Votre nom/prénom">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sor-commentaire">Commentaire / Motif de la sortie</label>
+                        <input type="text" id="sor-commentaire"
+                            placeholder="Ex: Chirurgie salle 2 / Perte accidentelle">
+                    </div>
+
+                    <button type="submit" class="btn-soumettre btn-soumettre--orange" id="btn-submit-sor">Valider le
+                        Prélèvement</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ── PIED DE PAGE ── -->
+    <footer class="footer">
+        <span id="footer-timestamp">Chargement des données…</span>
+    </footer>
+
+    <!-- ── TOAST ── -->
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+    <!-- Injection du fichier de constantes DOM -->
+    <?!= Utils_include('dom') ?>
+
+    <!-- Injection du script pour la logique d'interaction -->
+    <?!= Utils_include('script') ?>
+</body>
+
+</html>
