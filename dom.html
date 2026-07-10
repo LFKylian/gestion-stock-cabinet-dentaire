@@ -1,22 +1,51 @@
+<!-- dom.html — Références centralisées aux éléments du DOM -->
+<!-- Injecté en fin de body via Utils_include('dom')         -->
 <script>
   const DOM = {
-    stat_produits: document.getElementById('stat-produits'),
-    stat_lots: document.getElementById('stat-lots'),
-    footer_timestamp: document.getElementById('footer-timestamp'),
-    liste_stock: document.getElementById('liste-stock'),
-    badge_stock: document.getElementById('badge-stock'),
-    liste_perem: document.getElementById('liste-perem'),
-    badge_perem: document.getElementById('badge-perem'),
-    status_bar: document.getElementById('status-bar'),
-    status_bar_texte: document.getElementById('status-bar-texte'),
-    header_sub: document.getElementById('header-sub'),
-    liste_operateurs: document.getElementById('liste-operateurs'),
-    datalist: document.createElement('datalist'),
-    bloc_produit_existant: document.getElementById('bloc-produit-existant'),
-    bloc_nouveau_produit: document.getElementById('bloc-nouveau-produit'),
-    rec_id_produit: document.getElementById('rec-id-produit'),
-    rec_nom_prod: document.getElementById('rec-nom-prod'),
-    form_reception: document.getElementById('form-reception'),
-    rec_date_rec: document.getElementById('rec-date-rec')
-  }
+    // Header
+    header_sub:        document.getElementById('header-sub'),
+    status_bar:        document.getElementById('status-bar'),
+    status_bar_texte:  document.getElementById('status-bar-texte'),  // un seul ID (bug #6 corrigé)
+
+    // Accueil
+    stat_produits:     document.getElementById('stat-produits'),
+    stat_lots:         document.getElementById('stat-lots'),
+    footer_timestamp:  document.getElementById('footer-timestamp'),
+    liste_stock:       document.getElementById('liste-stock'),
+    badge_stock:       document.getElementById('badge-stock'),
+    liste_perem:       document.getElementById('liste-perem'),
+    badge_perem:       document.getElementById('badge-perem'),
+
+    // Formulaire réception
+    form_reception:         document.getElementById('form-reception'),
+    rec_type_produit:       document.getElementById('rec-type-produit'),
+    bloc_produit_existant:  document.getElementById('bloc-produit-existant'),
+    bloc_nouveau_produit:   document.getElementById('bloc-nouveau-produit'),
+    rec_id_produit:         document.getElementById('rec-id-produit'),
+    rec_nom_prod:           document.getElementById('rec-nom-prod'),  // corrigé : rec_nom_prod (bug #5)
+    rec_cat_reg:            document.getElementById('rec-cat-reg'),
+    rec_cat_usage:          document.getElementById('rec-cat-usage'),
+    rec_unite:              document.getElementById('rec-unite'),
+    rec_seuil:              document.getElementById('rec-seuil'),
+    rec_lot_fourn:          document.getElementById('rec-lot-fourn'),
+    rec_qte:                document.getElementById('rec-qte'),
+    rec_date_rec:           document.getElementById('rec-date-rec'),
+    rec_date_pem:           document.getElementById('rec-date-pem'),
+    rec_fournisseur:        document.getElementById('rec-fournisseur'),
+    rec_emplacement:        document.getElementById('rec-emplacement'),
+    rec_operateur:          document.getElementById('rec-operateur'),
+    btn_submit_rec:         document.getElementById('btn-submit-rec'),
+
+    // Formulaire sortie
+    form_sortie:       document.getElementById('form-sortie'),
+    sor_ref_lot:       document.getElementById('sor-ref-lot'),
+    sor_qte:           document.getElementById('sor-qte'),
+    sor_operateur:     document.getElementById('sor-operateur'),
+    sor_commentaire:   document.getElementById('sor-commentaire'),
+    apercu_stock_lot:  document.getElementById('apercu-stock-lot'),
+    btn_submit_sor:    document.getElementById('btn-submit-sor'),
+
+    // Datalist opérateurs
+    liste_operateurs:  document.getElementById('liste-operateurs'),
+  };
 </script>

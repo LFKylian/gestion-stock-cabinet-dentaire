@@ -430,4 +430,62 @@
     margin-top: 3px;
     font-weight: bold;
   }
+  /* ── Bouton Actualiser (dans le header) ── */
+  .btn-actualiser {
+    margin-left: auto;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    color: var(--blanc);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-actualiser:active { background: rgba(255,255,255,.3); }
+  .btn-actualiser:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ── Conteneur principal (remplace .main) ── */
+  .conteneur {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 0;
+  }
+
+  /* ── Tuiles (noms de classes harmonisés) ── */
+  .tuile__icone  { font-size: 30px; display: block; margin-bottom: 10px; line-height: 1; }
+  .tuile__titre  { font-size: 15px; font-weight: 600; color: var(--noir); display: block; margin-bottom: 3px; }
+  .tuile__desc   { font-size: 12px; color: var(--gris-text); line-height: 1.4; }
+  .tuile--bleu   { border-top: 3px solid var(--bleu); }
+  .tuile--orange { border-top: 3px solid var(--orange); }
+
+  /* ── Alertes-bloc header ── */
+  .alertes-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--gris-bord);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .alertes-titre { font-size: 15px; font-weight: 600; }
+
+  /* ── Stats ── */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--blanc);
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .stat-val   { font-size: 28px; font-weight: 700; color: var(--bleu); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--gris-text); margin-top: 4px; }
 </style>

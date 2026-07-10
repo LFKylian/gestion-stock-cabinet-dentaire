@@ -1,20 +1,12 @@
 // ============================================================
-//  STOCK DENTAIRE — Code.gs (WebApp principale)
+//  Main.gs — Point d'entrée HTTP de la WebApp
 // ============================================================
-
-
-// ────────────────────────────────────────────────────────────
-//  POINT D'ENTRÉE WEB
-// ────────────────────────────────────────────────────────────
 
 function doGet(e) {
   const params = e && e.parameter ? e.parameter : {};
-  const page   = params.page || "accueil";
-  const lotId  = params.lot  || null;
-
   const template = HtmlService.createTemplateFromFile("Index");
-  template.page  = page;
-  template.lotId = lotId;
+  template.page  = params.page || "accueil";
+  template.lotId = params.lot  || null;
 
   return template.evaluate()
     .setTitle("🦷 Stock Cabinet Dentaire")
@@ -22,21 +14,13 @@ function doGet(e) {
     .addMetaTag("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
 }
 
-// ────────────────────────────────────────────────────────────
-//  MENU SHEETS (fusionne avec Setup.gs)
-// ────────────────────────────────────────────────────────────
-
-/* function onOpen() {
+function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🦷 Stock Dentaire")
-    .addItem("▶ Initialiser la structure", "initialiserStockDentaire")
-    .addItem("🔄 Recalculer alertes et péremptions", "recalculerTout")
-    .addItem("⏰ Installer le recalcul quotidien (7h)", "installerTriggerQuotidien")
+    .addItem("▶ Initialiser la structure",           "initialiserStockDentaire")
+    .addItem("🔄 Recalculer alertes et péremptions", "Stock_recalculerTout")
+    .addItem("⏰ Installer le recalcul quotidien",   "installerTriggerQuotidien")
     .addSeparator()
-    .addItem("⚠️ Réinitialiser (efface tout)", "reinitialiserTout")
+    .addItem("⚠️ Réinitialiser (efface tout)",       "reinitialiserTout")
     .addToUi();
-} */
-
-// ────────────────────────────────────────────────────────────
-//  
-// ────────────────────────────────────────────────────────────
+}

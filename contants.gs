@@ -1,69 +1,85 @@
-// ────────────────────────────────────────────────────────────
-//  CONSTANTES — noms des feuilles et index des colonnes
-// ────────────────────────────────────────────────────────────
+// ============================================================
+//  constants.gs — Source unique de vérité pour noms de feuilles
+//  et noms de colonnes. Jamais de chaîne littérale ailleurs.
+// ============================================================
 
 const SHEETS = {
-  PRODUITS:    "Produits",
-  LOTS:        "Lots",
-  MOUVEMENTS:  "Mouvements",
-  LOG:         "Log",
+  PRODUITS:   "Produits",
+  LOTS:       "Lots",
+  MOUVEMENTS: "Mouvements",
+  LOG:        "Log",
 };
 
-// Colonnes Produits (index 1-based)
-const COL_PROD = {
-  ID:           1,   // A
-  NOM:          2,   // B
-  CAT_REG:      3,   // C
-  CAT_USAGE:    4,   // D
-  UNITE:        5,   // E
-  SEUIL:        6,   // F
-  FOURNISSEUR:  7,   // G
-  EMPLACEMENT:  8,   // H
-  NOTES:        9,   // I
-  ACTIF:        10,  // J
-  STOCK_TOTAL:  11,  // K  ← calculé
-  ALERTE:       12,  // L  ← calculé
+// Noms de colonnes (correspondent exactement aux en-têtes du Sheets)
+const COL = {
+  PROD: {
+    ID:          "ID Produit",
+    NOM:         "Nom du produit",
+    CAT_REG:     "Catégorie réglementaire",
+    CAT_USAGE:   "Catégorie d'usage",
+    UNITE:       "Unité de conditionnement",
+    SEUIL:       "Seuil alerte (stock bas)",
+    FOURNISSEUR: "Fournisseur habituel",
+    EMPLACEMENT: "Emplacement",
+    NOTES:       "Notes",
+    ACTIF:       "Actif",
+    STOCK_TOTAL: "Stock total",
+    ALERTE:      "Alerte stock",
+  },
+  LOT: {
+    REF:          "Référence lot",
+    ID_PRODUIT:   "ID Produit lié",
+    NOM_PRODUIT:  "Nom produit",
+    NUM_LOT_FOUR: "N° lot fournisseur",
+    QTE_RECUE:    "Quantité reçue",
+    QTE_RESTANTE: "Quantité restante",
+    DATE_RECEP:   "Date de réception",
+    DATE_PEREM:   "Date de péremption",
+    FOURNISSEUR:  "Fournisseur",
+    STATUT:       "Statut",
+    EMPLACEMENT:  "Emplacement précis",
+    ALERTE_PEREM: "Alerte péremption",
+    JOURS_PEREM:  "Jours avant péremption",
+    NOTES:        "Notes",
+  },
+  MVT: {
+    ID:          "ID Mouvement",
+    REF_LOT:     "Référence lot",
+    NOM_PRODUIT: "Nom produit",
+    TYPE:        "Type",
+    QUANTITE:    "Quantité",
+    DATE:        "Date",
+    PAR:         "Effectué par",
+    COMMENTAIRE: "Commentaire",
+    QTE_APRES:   "Qté restante après",
+  },
+  LOG: {
+    TIMESTAMP:    "Timestamp",
+    UTILISATEUR:  "Utilisateur",
+    ACTION:       "Action",
+    ENTITE:       "Entité concernée",
+    ID_ENTITE:    "ID Entité",
+    ANCIENNE_VAL: "Ancienne valeur",
+    NOUVELLE_VAL: "Nouvelle valeur",
+    SESSION:      "Session / Info",
+  },
 };
 
-// Colonnes Lots (index 1-based)
-const COL_LOT = {
-  REF:          1,   // A
-  ID_PRODUIT:   2,   // B
-  NOM_PRODUIT:  3,   // C
-  NUM_LOT_FOUR: 4,   // D
-  QTE_RECUE:    5,   // E
-  QTE_RESTANTE: 6,   // F
-  DATE_RECEP:   7,   // G
-  DATE_PEREM:   8,   // H
-  FOURNISSEUR:  9,   // I
-  STATUT:       10,  // J
-  EMPLACEMENT:  11,  // K
-  ALERTE_PEREM: 12,  // L  ← calculé
-  JOURS_PEREM:  13,  // M  ← calculé
-  NOTES:        14,  // N
+const STATUT_LOT = {
+  EN_STOCK:  "En stock",
+  STOCK_BAS: "Stock bas",
+  EPUISE:    "Épuisé",
+  PERIME:    "Périmé",
+  RETIRE:    "Retiré / Rappelé",
 };
 
-// Colonnes Mouvements (index 1-based)
-const COL_MVT = {
-  ID:           1,   // A
-  REF_LOT:      2,   // B
-  NOM_PRODUIT:  3,   // C
-  TYPE:         4,   // D
-  QUANTITE:     5,   // E
-  DATE:         6,   // F
-  PAR:          7,   // G
-  COMMENTAIRE:  8,   // H
-  QTE_APRES:    9,   // I
+const SEUILS_PEREM = { URGENT: 30, PROCHE: 60 };
+
+const TYPE_MVT = {
+  ENTREE:     "Entrée (réception)",
+  SORTIE:     "Sortie (utilisation)",
+  AJUSTEMENT: "Ajustement inventaire",
+  RETRAIT:    "Retrait / Périmé",
 };
 
-// Colonnes Log (index 1-based)
-const COL_LOG = {
-  TIMESTAMP:    1,   // A
-  UTILISATEUR:  2,   // B
-  ACTION:       3,   // C
-  ENTITE:       4,   // D
-  ID_ENTITE:    5,   // E
-  ANCIENNE_VAL: 6,   // F
-  NOUVELLE_VAL: 7,   // G
-  SESSION:      8,   // H
-};
+const ID_PREFIX = { PROD: "PROD", LOT: "LOT", MVT: "MVT" };
