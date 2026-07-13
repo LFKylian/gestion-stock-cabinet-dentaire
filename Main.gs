@@ -17,7 +17,7 @@ function doGet(e) {
 /* function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🦷 Stock Dentaire")
-    .addItem("▶ Initialiser la structure",           "initialiserStockDentaire")
+    .addItem("▶ Initialiser la structure",           "_initialiserStockDentaire")
     .addItem("🔄 Recalculer alertes et péremptions", "Stock_recalculerTout")
     .addItem("⏰ Installer le recalcul quotidien",   "installerTriggerQuotidien")
     .addSeparator()

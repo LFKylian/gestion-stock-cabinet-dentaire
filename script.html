@@ -32,6 +32,63 @@ function naviguerVers(idPage) {
   }
 }
 
+// ── GESTION DE LA BASE DE DONNÉES ──
+
+  /**
+   * Tente de lier le document Google Sheet fourni
+   */
+  function connecterBaseDeDonnees(e) {
+    e.preventDefault();
+    const urlInput = document.getElementById('config-db-url').value;
+    const btn = document.getElementById('btn-submit-config');
+    
+    btn.disabled = true;
+    btn.textContent = "⏳ Validation et connexion...";
+
+    google.script.run
+      .withSuccessHandler(function(res) {
+        btn.disabled = false;
+        btn.textContent = "Lier le document";
+        
+        if (res.ok) {
+          afficherToast(res.message, false);
+          // Si réussi, on retourne à l'accueil et on recharge les données
+          naviguerVers('page-accueil');
+          chargerDashboard();
+        } else {
+          afficherToast("Erreur : " + res.erreur, true);
+        }
+      })
+      .withFailureHandler(function(err) {
+        btn.disabled = false;
+        btn.textContent = "Lier le document";
+        afficherToast("Erreur réseau : " + err.message, true);
+      })
+      .webapp_connectDatabase(urlInput);
+  }
+
+  /**
+   * Récupère l'ID mémorisé pour pré-remplir le champ
+   */
+  function chargerConfigDb() {
+    google.script.run.withSuccessHandler(function(res) {
+      if (res.id) {
+        document.getElementById('config-db-url').value = res.id;
+      }
+    }).Db_getDbConfig();
+  }
+
+  function deconnecterBaseDeDonnees() {
+    if (!confirm("Voulez-vous vraiment déconnecter la base actuelle ? Vous devrez fournir un nouveau lien pour utiliser l'application.")) return;
+    
+    google.script.run.withSuccessHandler(function() {
+      document.getElementById('config-db-url').value = "";
+      afficherToast("Base déconnectée.", false);
+      // Forcer le rechargement qui va échouer et rouvrir la configuration
+      chargerDashboard(); 
+    }).Db_deconnecterDb();
+  }
+
 // ── Chargement initial (et rafraîchissement) ────────────────
 
 /**
@@ -50,8 +107,15 @@ function chargerDashboard(silencieux) {
       _afficherDashboard();
     })
     .withFailureHandler(err => {
-      _setEtatChargement(false);
-      afficherToast('Erreur de chargement : ' + err.message, true);
+      if (err.message.includes("DB_MISSING")) {
+          afficherToast('Configuration requise : Veuillez lier une base de données.', true);
+          naviguerVers('page-config');
+          chargerConfigDb();
+        } else {
+          afficherToast('Erreur de chargement : ' + err.message, true);
+          document.getElementById('liste-stock').innerHTML = '<div class="etat-vide">Impossible de charger les données.</div>';
+        }
+        _setEtatChargement(false);
     })
     .Init_getDashboardData();
 }

@@ -13,9 +13,19 @@
  * @returns {GoogleAppsScript.Spreadsheet.Sheet}
  */
 function Utils_getFeuille(nom) {
-  const feuille = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U").getSheetByName(nom);
-  if (!feuille) throw new Error("Feuille introuvable : " + nom);
-  return feuille;
+  // const feuille = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U").getSheetByName(nom);
+  const id = Db_getDbId();
+  if (!id) throw new Error("DB_MISSING"); // Erreur interceptée par le client
+  
+  try {
+    const ss = SpreadsheetApp.openById(id);
+    const feuille = ss.getSheetByName(nom);
+    if (!feuille) throw new Error("Feuille introuvable : " + nom);
+    return feuille;
+  } catch (e) {
+    if (e.message.includes("introuvable")) throw e;
+    throw new Error("Impossible d'accéder au document. Vérifiez les droits.");
+  }
 }
 
 /**
