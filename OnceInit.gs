@@ -6,7 +6,6 @@
 // ============================================================
 
 function _initialiserStockDentaire(ss) {
-  // const ss = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U");
   console.log("⏳ Initialisation en cours, veuillez patienter…");
 
   _creerFeuilleProduits(ss);

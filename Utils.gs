@@ -13,7 +13,6 @@
  * @returns {GoogleAppsScript.Spreadsheet.Sheet}
  */
 function Utils_getFeuille(nom) {
-  // const feuille = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U").getSheetByName(nom);
   const id = Db_getDbId();
   if (!id) throw new Error("DB_MANQUANTE"); // Erreur interceptée par le client
   
