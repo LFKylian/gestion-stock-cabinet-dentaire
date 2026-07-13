@@ -16,16 +16,19 @@
       <span class="header-logo">🦷</span>
       <div>
         <div class="header-title">Stock Médicaments</div>
-        <!-- bug #6 corrigé : un seul id="header-sub" -->
         <div class="header-sub" id="header-sub">Cabinet dentaire</div>
       </div>
+      <!-- Bouton de configuration de la base de données -->
+      <button id="btn-config-db" class="btn-config-db" onclick="naviguerVers('page-config')"
+              title="Choisir le fichier de base de données" aria-label="Changer base de données">
+        📊 Choix DB
+      </button>
       <!-- Bouton d'actualisation du cache -->
       <button id="btn-actualiser" class="btn-actualiser" onclick="chargerDashboard()"
               title="Rafraîchir les données depuis la base" aria-label="Actualiser le cache">
         🔄 Actualiser
       </button>
     </div>
-    <!-- bug #6 corrigé : un seul id="status-bar-texte" -->
     <div class="status-bar" id="status-bar">
       ⚠️ <span id="status-bar-texte">Alertes actives</span>
     </div>
@@ -33,6 +36,33 @@
 
   <!-- ── CONTENU ── -->
   <main class="conteneur">
+
+    <!-- ── CONFIGURATION DB ── -->
+    <section id="page-config" class="page-section">
+      <div class="form-card">
+        <div class="form-header">
+          <button class="btn-retour" onclick="naviguerVers('page-accueil')">← Retour</button>
+          <h2>Configuration de la base</h2>
+        </div>
+        
+        <div style="margin-bottom: 20px; font-size: 0.9rem; color: var(--gris-text); line-height: 1.5;">
+          Veuillez coller le lien de votre document Google Sheets qui servira de base de données. Si le fichier est vide, il sera automatiquement initialisé.
+        </div>
+
+        <form id="form-config" onsubmit="connecterBaseDeDonnees(event)">
+          <div class="form-group">
+            <label for="config-db-url">URL ou ID du Google Sheet *</label>
+            <input type="text" id="config-db-url" required placeholder="https://docs.google.com/spreadsheets/d/...">
+          </div>
+
+          <button type="submit" class="btn-soumettre btn-soumettre--bleu" id="btn-submit-config">Lier le document</button>
+        </form>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--gris-bord);">
+          <button class="btn-soumettre btn-deconnexion" onclick="deconnecterBaseDeDonnees()">Déconnecter la base actuelle</button>
+        </div>
+      </div>
+    </section>
 
     <!-- PAGE ACCUEIL -->
     <section id="page-accueil" class="page-section active">

@@ -30,7 +30,7 @@ function Init_getDashboardData() {
 
     const operateursRes = Utils_getOperateurs();
 
-    const data {
+    const data = {
       ok:               true,
       produits:         feuilleProduits,
       lots:             feuilleLots,
@@ -45,7 +45,7 @@ function Init_getDashboardData() {
       timestamp:        new Date().toISOString(),
     };
 
-    return JSON.parse(JSON.stringify(payload));
+    return JSON.parse(JSON.stringify(data));
   } catch (e) {
     return { ok: false, erreur: e.message };
   }

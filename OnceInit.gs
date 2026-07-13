@@ -1,12 +1,11 @@
 // ============================================================
 //  STOCK DENTAIRE — Script d'initialisation v2 (correctif)
 //  Colle ce script en REMPLACEMENT du précédent dans l'éditeur
-//  Puis exécute : initialiserStockDentaire()
+//  Puis exécute : _initialiserStockDentaire(ss)
 //  (Produits sera recréé proprement, les autres aussi)
 // ============================================================
 
-function initialiserStockDentaire() {
-  const ss = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U");
+function _initialiserStockDentaire(ss) {
   console.log("⏳ Initialisation en cours, veuillez patienter…");
 
   _creerFeuilleProduits(ss);
@@ -357,5 +356,5 @@ function reinitialiserTout() {
   const rep = ui.alert("⚠️ ATTENTION",
     "Cette action va EFFACER toutes les données et recréer la structure vierge.\nÊtes-vous sûr ?",
     ui.ButtonSet.YES_NO);
-  if (rep === ui.Button.YES) initialiserStockDentaire();
+  if (rep === ui.Button.YES) _initialiserStockDentaire();
 }
