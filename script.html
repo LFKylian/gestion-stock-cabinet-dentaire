@@ -39,8 +39,8 @@ function naviguerVers(idPage) {
    */
   function connecterBaseDeDonnees(e) {
     e.preventDefault();
-    const urlInput = document.getElementById('config-db-url').value;
-    const btn = document.getElementById('btn-submit-config');
+    const urlInput = DOM.config_db_url.value;
+    const btn = DOM.btn_submit_config;
     
     btn.disabled = true;
     btn.textContent = "⏳ Validation et connexion...";
@@ -64,7 +64,7 @@ function naviguerVers(idPage) {
         btn.textContent = "Lier le document";
         afficherToast("Erreur réseau : " + err.message, true);
       })
-      .webapp_connectDatabase(urlInput);
+      .Db_deconnecterDb(urlInput);
   }
 
   /**
@@ -73,7 +73,7 @@ function naviguerVers(idPage) {
   function chargerConfigDb() {
     google.script.run.withSuccessHandler(function(res) {
       if (res.id) {
-        document.getElementById('config-db-url').value = res.id;
+        DOM.config_db_url.value = res.id;
       }
     }).Db_getDbConfig();
   }
@@ -82,7 +82,7 @@ function naviguerVers(idPage) {
     if (!confirm("Voulez-vous vraiment déconnecter la base actuelle ? Vous devrez fournir un nouveau lien pour utiliser l'application.")) return;
     
     google.script.run.withSuccessHandler(function() {
-      document.getElementById('config-db-url').value = "";
+      DOM.config_db_url.value = "";
       afficherToast("Base déconnectée.", false);
       // Forcer le rechargement qui va échouer et rouvrir la configuration
       chargerDashboard(); 
@@ -107,13 +107,13 @@ function chargerDashboard(silencieux) {
       _afficherDashboard();
     })
     .withFailureHandler(err => {
-      if (err.message.includes("DB_MISSING")) {
+      if (err.message.includes("DB_")) {
           afficherToast('Configuration requise : Veuillez lier une base de données.', true);
           naviguerVers('page-config');
           chargerConfigDb();
         } else {
           afficherToast('Erreur de chargement : ' + err.message, true);
-          document.getElementById('liste-stock').innerHTML = '<div class="etat-vide">Impossible de charger les données.</div>';
+          DOM.liste_stock.innerHTML = '<div class="etat-vide">Impossible de charger les données.</div>';
         }
         _setEtatChargement(false);
     })
@@ -408,7 +408,7 @@ function soumettreSortie(e) {
 
 let _toastTimer = null;
 function afficherToast(msg, erreur) {
-  const el = document.getElementById('toast');
+  const el = DOM.toast;
   if (!el) return;
   el.textContent = msg;
   el.className   = 'toast' + (erreur ? ' erreur' : '');
@@ -421,7 +421,7 @@ function afficherToast(msg, erreur) {
 // ── Helpers internes ──────────────────────────────────────────
 
 function _setEtatChargement(actif) {
-  const btn = document.getElementById('btn-actualiser');
+  const btn = DOM.btn_actualiser;
   if (btn) btn.textContent = actif ? '⏳' : '🔄 Actualiser';
   if (DOM.liste_stock) DOM.liste_stock.innerHTML =
     actif ? '<div class="etat-vide"><span class="spinner"></span> Chargement…</div>' : '';

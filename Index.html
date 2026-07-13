@@ -16,10 +16,9 @@
       <span class="header-logo">🦷</span>
       <div>
         <div class="header-title">Stock Médicaments</div>
-        <!-- bug #6 corrigé : un seul id="header-sub" -->
         <div class="header-sub" id="header-sub">Cabinet dentaire</div>
+        <div class="header-actions" onclick="naviguerVers('page-config')" title="Configuration DB">⚙️ Config base de données (DB)</div>
       </div>
-      <div class="header-actions" onclick="naviguerVers('page-config')" title="Configuration">⚙️</div>
       <!-- Bouton d'actualisation du cache -->
       <button id="btn-actualiser" class="btn-actualiser" onclick="chargerDashboard()"
               title="Rafraîchir les données depuis la base" aria-label="Actualiser le cache">
