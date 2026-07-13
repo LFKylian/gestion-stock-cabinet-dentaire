@@ -64,7 +64,7 @@ function naviguerVers(idPage) {
         btn.textContent = "Lier le document";
         afficherToast("Erreur réseau : " + err.message, true);
       })
-      .Db_deconnecterDb(urlInput);
+      .Db_connecterDb(urlInput);
   }
 
   /**
@@ -102,12 +102,22 @@ function chargerDashboard(silencieux) {
   google.script.run
     .withSuccessHandler(data => {
       _setEtatChargement(false);
-      if (!data.ok) { afficherToast('Erreur : ' + data.erreur, true); return; }
+      if (!data.ok) { 
+        if (data.erreur.includes("DB_MANQUANTE")) {
+          afficherToast('Configuration requise : Veuillez lier une base de données.', true);
+          naviguerVers('page-config');
+          chargerConfigDb();
+        } else {
+          afficherToast('Erreur : ' + err.message, true);
+          DOM.liste_stock.innerHTML = '<div class="etat-vide">Une erreur est survenue.</div>';
+        }
+        return; 
+      }
       _mettreAJourCache(data);
       _afficherDashboard();
     })
     .withFailureHandler(err => {
-      if (err.message.includes("DB_")) {
+      if (err.message.includes("DB_MANQUANTE")) {
           afficherToast('Configuration requise : Veuillez lier une base de données.', true);
           naviguerVers('page-config');
           chargerConfigDb();
@@ -422,7 +432,9 @@ function afficherToast(msg, erreur) {
 
 function _setEtatChargement(actif) {
   const btn = DOM.btn_actualiser;
+  const btn_db = DOM.btn_config_db;
   if (btn) btn.textContent = actif ? '⏳' : '🔄 Actualiser';
+  if (btn_db) btn_db.textContent = actif ? '⏳' : '📊 Choix DB';
   if (DOM.liste_stock) DOM.liste_stock.innerHTML =
     actif ? '<div class="etat-vide"><span class="spinner"></span> Chargement…</div>' : '';
   if (DOM.liste_perem) DOM.liste_perem.innerHTML =

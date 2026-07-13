@@ -17,15 +17,18 @@
       <div>
         <div class="header-title">Stock Médicaments</div>
         <div class="header-sub" id="header-sub">Cabinet dentaire</div>
-        <div class="header-actions" onclick="naviguerVers('page-config')" title="Configuration DB">⚙️ Config base de données (DB)</div>
       </div>
+      <!-- Bouton de configuration de la base de données -->
+      <button id="btn-config-db" class="btn-config-db" onclick="naviguerVers('page-config')"
+              title="Choisir le fichier de base de données" aria-label="Changer base de données">
+        📊 Choix DB
+      </button>
       <!-- Bouton d'actualisation du cache -->
       <button id="btn-actualiser" class="btn-actualiser" onclick="chargerDashboard()"
               title="Rafraîchir les données depuis la base" aria-label="Actualiser le cache">
         🔄 Actualiser
       </button>
     </div>
-    <!-- bug #6 corrigé : un seul id="status-bar-texte" -->
     <div class="status-bar" id="status-bar">
       ⚠️ <span id="status-bar-texte">Alertes actives</span>
     </div>
