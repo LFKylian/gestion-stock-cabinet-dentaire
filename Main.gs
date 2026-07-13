@@ -14,7 +14,7 @@ function doGet(e) {
     .addMetaTag("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0");
 }
 
-function onOpen() {
+/* function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu("🦷 Stock Dentaire")
     .addItem("▶ Initialiser la structure",           "initialiserStockDentaire")
@@ -23,4 +23,4 @@ function onOpen() {
     .addSeparator()
     .addItem("⚠️ Réinitialiser (efface tout)",       "reinitialiserTout")
     .addToUi();
-}
+} */

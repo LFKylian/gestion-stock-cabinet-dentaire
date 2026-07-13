@@ -5,19 +5,15 @@
 //  Chaque fonction reçoit les données déjà lues en mémoire
 //  (tableaux d'objets), jamais un objet Sheet brut.
 //  → Une seule lecture Sheets par feuille par exécution.
-//
-//  CORRECTION BUG #7 : getActiveSpreadsheet() au lieu de
-//  openById() pour fonctionner chez tous les utilisateurs.
 // ============================================================
 
 /**
  * Retourne l'objet Sheet par nom.
- * Utilise getActiveSpreadsheet() — portable, sans ID en dur.
  * @param {string} nom
  * @returns {GoogleAppsScript.Spreadsheet.Sheet}
  */
 function Utils_getFeuille(nom) {
-  const feuille = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nom);
+  const feuille = SpreadsheetApp.openById("1LA8F21XcAoZbVxNInK8HVbUKyal5QJPd9rkVE9qSO9U").getSheetByName(nom);
   if (!feuille) throw new Error("Feuille introuvable : " + nom);
   return feuille;
 }
